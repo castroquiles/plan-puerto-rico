@@ -1,0 +1,18 @@
+name: Validate proposals
+on:
+  pull_request:
+    paths:
+      - 'proposals/**'
+jobs:
+  check-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if a proposal has no sources
+        run: |
+          for f in proposals/*.md; do
+            if [ "$(basename "$f")" = "TEMPLATE.md" ]; then continue; fi
+            if ! grep -q "## Sources" "$f"; then
+              echo "Missing Sources section: $f"; exit 1
+            fi
+          done
